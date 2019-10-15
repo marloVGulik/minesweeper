@@ -1,19 +1,22 @@
 var blocks = [];
 var canvas = document.getElementById("main");
 
+
+var surround = [{x : -1, y : -1}, {x : -1, y : 0}, {x : -1, y : 1}, {x : 0, y : -1}, {x : 0, y : 1}, {x : 1, y : -1}, {x : 1, y : 0}, {x : 1, y : 1}];
+
 var size = {x : 10, y : 10};
 
 var bombLoc = [];
 
 
-var blockTypes = ["notClicked", "1", "2", "3", "empty", "bomb"];
+var blockTypes = ["notClicked", "empty", "bomb", "1", "2", "3", "4", "5", "6", "7", "8"];
 
 function Init() { // Run to start game
-    //size.x = prompt("Width");
-    //size.y = prompt("Height");
-    //var bombAmount = prompt("Bomb amount");
+    size.x = prompt("Width");
+    size.y = prompt("Height");
+    var bombAmount = prompt("Bomb amount");
 
-    var bombAmount = 10;
+    //var bombAmount = 10;
 
     initCanvas(size);
     generateShownGrid(size);
@@ -28,7 +31,7 @@ function initCanvas(size) { // Create canvas and activate click detector
     canvas.addEventListener("click", function(evt){
         var mPos = getMousePos(canvas, evt);
         clickedBlock(Math.floor(mPos.x / 16), Math.floor(mPos.y / 16));
-    })
+    });
 }
 
 function generateShownGrid(size) { // Generates empty grid    
@@ -44,7 +47,7 @@ function generateHiddenGrid(size, bombAmount) {
     for(var xLoc = 0; xLoc < size.x; xLoc++) {
         var localYLength = [];
         for(var yLoc = 0; yLoc < size.y; yLoc++) {
-            localYLength.push(blockTypes[4]);
+            localYLength.push(blockTypes[1]);
         }
         blocks.push(localYLength);
     }
@@ -69,12 +72,32 @@ function generateHiddenGrid(size, bombAmount) {
     // Make the blocks around the bomb have numbers
     bombLoc.forEach(function(loc){
         console.log(loc.x + ", " + loc.y);
-        blocks[loc.x][loc.y] = blockTypes[5];
-        if(blocks.size >= loc.x && blocks[loc.x].size >= loc.y) {
-            if(blocks[loc.x + 1][loc.y] != blockTypes[5]) {
-                blocks[loc.x + 1][loc.y] = blockTypes[1];
+        blocks[loc.x][loc.y] = blockTypes[2];
+        var number = 2;
+        surround.forEach(function(surroundNumber) {
+            if(loc.x + surroundNumber.x < size.x && loc.y + surroundNumber.y < size.y) {
+                if(loc.x + surroundNumber.x >= 0 && loc.y + surroundNumber.y >= 0) {
+                    surround.forEach(function(surroundingSurroundNumber) {
+                        if(loc.x + surroundingSurroundNumber.x + surroundNumber.x < size.x && loc.y + surroundingSurroundNumber.y + surroundNumber.y < size.y) {
+                            if(loc.x + surroundingSurroundNumber.x + surroundNumber.x >= 0 && loc.y + surroundingSurroundNumber.y + surroundNumber.y >= 0) {
+                                if(blocks[loc.x + surroundingSurroundNumber.x + surroundNumber.x][loc.y + surroundingSurroundNumber.y + surroundNumber.y] == blockTypes[2]) {
+                                    number++;
+                                    console.log("Found bomb, increasing number");
+                                } else {
+                                    console.log("Didn't find a bomb");
+                                }
+                            } else {
+                                console.log("Block out of range");
+                            }
+                        }
+                    });
+                    if(blocks[loc.x + surroundNumber.x][loc.y + surroundNumber.y] != blockTypes[2]) {
+                        blocks[loc.x + surroundNumber.x][loc.y + surroundNumber.y] = blockTypes[number];
+                    }
+                    number = 2;
+                }
             }
-        }
+        });
     });
     console.log(blocks);
 }
@@ -88,7 +111,7 @@ function createBombBlock(x, y) {
             console.log("Found bomb at x " + x + ", bombloc: " + bombLoc[i]);
             if(bombLoc[i + 1] == y) {
                 console.log("Found bomb at y " + y + ", bombloc: " + bombLoc[i + 1]);
-                blocksY.push(blockTypes[5]);
+                blocksY.push(blockTypes[2]);
                 console.log("Put bomb at " + x + ", " + y);
             }
         }
@@ -107,7 +130,7 @@ function clickedBlock(x, y, cheat) {
     console.log("Clicked: " + x + ", " + y);
 
     if(x < size.x && y < size.y) {
-        if(blocks[x][y] == blockTypes[4]) {
+        if(blocks[x][y] == blockTypes[1]) {
             createBlock(blocks[x][y], x, y);
             clickedWhite(x, y);
         }
