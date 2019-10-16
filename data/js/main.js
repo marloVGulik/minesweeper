@@ -1,8 +1,10 @@
 var blocks = [];
+var allClickedBlocks = [];
 var canvas = document.getElementById("main");
 
 
 var surround = [{x : -1, y : -1}, {x : -1, y : 0}, {x : -1, y : 1}, {x : 0, y : -1}, {x : 0, y : 1}, {x : 1, y : -1}, {x : 1, y : 0}, {x : 1, y : 1}];
+var smallSurround = [{x : -1, y : -1}, {x : -1, y : 1}, {x : 1, y : -1}, {x : 1, y : 1}];
 
 var size = {x : 10, y : 10};
 
@@ -129,13 +131,32 @@ function clickedBlock(x, y, cheat) {
     var cheat = cheat | false;
     console.log("Clicked: " + x + ", " + y);
 
+
     if(x < size.x && y < size.y) {
         if(blocks[x][y] == blockTypes[1]) {
-            createBlock(blocks[x][y], x, y);
+            allClickedBlocks.push({x : x, y : y});
             clickedWhite(x, y);
         }
     }
+    allClickedBlocks.push({x : x, y : y});
     createBlock(blocks[x][y], x, y);
+}
+
+// Clicked white block?
+function clickedWhite(x, y) {
+    for(var i = 0; i < size.x; i++) {
+        for(var j = 0; j < size.y; j++) {
+            if(blocks[i][j] == blockTypes[1]) {
+                smallSurround.forEach(function(loc) {
+                    if(i + loc.x < size.x && j + loc.y < size.y) {
+                        if(i + loc.x >= 0 && j + loc.y >= 0) {
+                            createBlock(blocks[i + loc.x][j + loc.y], i + loc.x, j + loc.y);
+                        }
+                    }
+                });
+            }
+        } 
+    }
 }
 
 // HELPER FUNC
