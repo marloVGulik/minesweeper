@@ -4,7 +4,7 @@ var canvas = document.getElementById("main");
 
 
 var surround = [{x : -1, y : -1}, {x : -1, y : 0}, {x : -1, y : 1}, {x : 0, y : -1}, {x : 0, y : 1}, {x : 1, y : -1}, {x : 1, y : 0}, {x : 1, y : 1}];
-var smallSurround = [{x : 0, y : 0}, {x : -1, y : -1}, {x : -1, y : 1}, {x : 1, y : -1}, {x : 1, y : 1}];
+var smallSurround = [{x : -1, y : 0}, {x : 1, y : 0}, {x : 0, y : -1}, {x : 0, y : 1}];
 
 var size = {x : 10, y : 10};
 
@@ -77,27 +77,20 @@ function generateHiddenGrid(size, bombAmount) {
         blocks[loc.x][loc.y] = {bType : blockTypes[2], isClicked : false};
         var number = 2;
         surround.forEach(function(surroundNumber) {
-            if(loc.x + surroundNumber.x < size.x && loc.y + surroundNumber.y < size.y) {
-                if(loc.x + surroundNumber.x >= 0 && loc.y + surroundNumber.y >= 0) {
-                    surround.forEach(function(surroundingSurroundNumber) {
-                        if(loc.x + surroundingSurroundNumber.x + surroundNumber.x < size.x && loc.y + surroundingSurroundNumber.y + surroundNumber.y < size.y) {
-                            if(loc.x + surroundingSurroundNumber.x + surroundNumber.x >= 0 && loc.y + surroundingSurroundNumber.y + surroundNumber.y >= 0) {
-                                if(blocks[loc.x + surroundingSurroundNumber.x + surroundNumber.x][loc.y + surroundingSurroundNumber.y + surroundNumber.y].bType == blockTypes[2]) {
-                                    number++;
-                                    console.log("Found bomb, increasing number");
-                                } else {
-                                    console.log("Didn't find a bomb");
-                                }
-                            } else {
-                                console.log("Block out of range");
-                            }
+            if(insideBounds({x : loc.x + surroundNumber.x, y : loc.y + surroundNumber.y})) {
+                surround.forEach(function(surroundingSurroundNumber) {
+                    if(insideBounds({x : loc.x + surroundNumber.x + surroundingSurroundNumber.x, y : loc.y + surroundNumber.y + surroundingSurroundNumber.y})) {
+                        if(blocks[loc.x + surroundingSurroundNumber.x + surroundNumber.x][loc.y + surroundingSurroundNumber.y + surroundNumber.y].bType == blockTypes[2]) {
+                            number++;
                         }
-                    });
-                    if(blocks[loc.x + surroundNumber.x][loc.y + surroundNumber.y] != blockTypes[2]) {
-                        blocks[loc.x + surroundNumber.x][loc.y + surroundNumber.y] = {bType : blockTypes[number], isClicked : false};
+                    } else {
+                        console.log("Block out of range");
                     }
-                    number = 2;
+                });
+                if(blocks[loc.x + surroundNumber.x][loc.y + surroundNumber.y] != blockTypes[2]) {
+                    blocks[loc.x + surroundNumber.x][loc.y + surroundNumber.y] = {bType : blockTypes[number], isClicked : false};
                 }
+                number = 2;
             }
         });
     });
@@ -135,7 +128,7 @@ function clickedBlock(x, y, cheat) {
     if(blocks[x][y].bType == blockTypes[1]) {
         console.log("White clicked");
         blocks[x][y].isClicked = true;
-        clickedWhite2(x, y);
+        clickedWhite(x, y);
     }
 
     blocks[x][y].isClicked = true;
@@ -144,89 +137,78 @@ function clickedBlock(x, y, cheat) {
 
 // Clicked white block?
 function clickedWhite(x, y) {
-    for(var i = 0; i < size.x; i++) {
-        for(var j = 0; j < size.y; j++) {
-            if(blocks[i][j].bType == blockTypes[1] && blocks[i][j].isClicked == true) {
-                smallSurround.forEach(function(loc) {
-                    if(i + loc.x < size.x && j + loc.y < size.y) {
-                        if(i + loc.x >= 0 && j + loc.y >= 0) {
-                            if(blocks[i + loc.x][j + loc.y].isClicked == true) {
-                                if(smallSurround.forEach(function(pos) {
-                                    console.log("Checking");
-                                    if(blocks[i + loc.x + pos.x][j + loc.y + pos.y].bType == blockTypes[1]) {
-                                        console.log("Returning true");
-                                        return true;
-                                    } else {
-                                        console.log("Returning false");
-                                        return false;
-                                    }
-                                }) == true) {
-                                    console.log("test")
-                                    createBlock(blocks[i + loc.x][j + loc.y].bType, i + loc.x, j + loc.y);
-                                    blocks[i + loc.x][j + loc.y].isClicked = true;
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        } 
-    }
-}
-
-function clickedWhite2(x, y) {
     for(var xS = 0; xS < size.x; xS++) {
-        for(var yS = 0; yS < size.y; yS++) {
+        for(var yS = 0; yS < size.y; yS++) {    
             console.log("Finding shortest route to " + x + ", " + y + " from " + xS + ", " + yS);
-            findPath(xS, yS, x, y);
+            if(blocks[xS][yS].bType == blockTypes[1]) {
+                findPath(xS, yS, x, y);
+            } else {
+                console.log("Block at " + xS + ", " + yS + " is not white");
+            }
         }
     }
 }
 
 // HELPER FUNC
 function findPath(xS, yS, xF, yF) {
-    var firstrun = true;
-    while(xS != xF && yS != yF) {
-        var scoreX = difference(xS, xF);
-        var scoreY = difference(yS, yF);
-        
-        if(firstrun) {
-            var oldDiffX = difference(xS, xF);
-            var oldDiffY = difference(yS, yF);
-            firstrun = true;
-        }
-        
-        for(let pos of surround) {
-            if(pos.x + xS < size.x && pos.x + xS >= 0 && pos.y + yS < size.y && pos.y + yS >= 0) {
-                if(blocks[xS + pos.x][yS + pos.y].bType != blockTypes[1]) {
-                    console.log("Number found");
-                    break;
-                } else {
+    var startPos = {x : xS, y : yS};
+    var foundPath = false;
+    var maxTries = 30;
+    console.log("Max tries : " + maxTries);
+    var tryNumber = 0;
 
-                    createBlock(blocks[xS + pos.x][yS + pos.y].bType, xS + pos.x, yS + pos.y);
-                    blocks[xS + pos.x][yS + pos.y].isClicked = true;
+    while(!foundPath && maxTries > tryNumber) {
+        var differences = [];
+        var diffLoc = [];
+        for(var i = 0; i < smallSurround.length; i++) {
+            if(insideBounds({x : smallSurround[i].x + xS, y : smallSurround[i].y + yS})) {
+                if(blocks[xS + smallSurround[i].x][yS + smallSurround[i].y].bType == blockTypes[1]) {
+                    console.log("Possible block found");
+                    var diff = {};
+                    diff.x = difference(xS + smallSurround[i].x, xF);
+                    diff.y = difference(yS + smallSurround[i].y, yF);
 
-                    var posX = pos.x + xS;
-                    var posY = pos.y + yS;
-    
-                    var diffX = difference(posX, xF);
-                    var diffY = difference(posY, yF);
-                    //console.log(difference(posX, xF) + ", " + difference(posY, yF));
+                    var dLoc = {};
+                    dLoc.x = xS + smallSurround[i].x;
+                    dLoc.y = yS + smallSurround[i].y;
 
-                    if(diffX < oldDiffX) {
-                        console.log("Going good in X direction ");
-                        xS += pos.x;
-                        var scoreX = difference(xS, xF);
-                    } else if(diffY < oldDiffY) {
-                        console.log("Going good in Y direction ");
-                        yS += pos.y;
-                        var scoreY = difference(yS, yF);
-                    }
+                    console.log(difference(xS + smallSurround[i].x, xF));
+                    differences.push(diff);
+                    diffLoc.push(dLoc);
                 }
             }
         }
-        oldDiffX = difference(xS, xF);
-        oldDiffY = difference(yS, yF);
+        
+        var bestCandidate = {x : 100, y : 100};
+        var bestLoc = {};
+        for(var i = 0; i < differences.length; i++) {
+            
+            if(bestCandidate.x > differences[i].x || bestCandidate.y > differences[i].y) {
+                bestCandidate = differences[i];
+                bestLoc = diffLoc[i];
+            }
+        }
+
+        console.log("Going to " + bestLoc.x + ", " + bestLoc.y);
+        xS = bestLoc.x;
+        yS = bestLoc.y;
+
+        console.log("To go: " + difference(xS, xF) + ", " + difference(yS, yF));
+
+        if(xS == xF && yS == yF) {
+            console.log("Reached block");
+            for(let surroundPos of surround) {
+                if(insideBounds({x : surroundPos.x + startPos.x, y : surroundPos.y + startPos.y})) {
+                    createBlock(blocks[startPos.x + surroundPos.x][startPos.y + surroundPos.y].bType, startPos.x + surroundPos.x, startPos.y + surroundPos.y);
+                    blocks[startPos.x + surroundPos.x][startPos.y + surroundPos.y].isClicked = true;
+                }
+            }
+            blocks[startPos.x][startPos.y].isClicked = true;
+            foundPath = true;
+        }
+
+        tryNumber++;
+        console.log("Try number: " + tryNumber);
     }
 }
 function difference(number1, number2) {
@@ -236,6 +218,12 @@ function difference(number1, number2) {
     } else {
         var returnVal = number1 - number2;
         return returnVal;
+    }
+}
+
+function insideBounds(pos) {
+    if(pos.x < size.x && pos.y < size.y && pos.x >= 0 && pos.y >= 0) {
+        return true;
     }
 }
 
