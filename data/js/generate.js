@@ -57,10 +57,12 @@ function generateHiddenGrid(size, bombAmount) {
         bombLoc.push(random[i]);
     }
 
-    // Make the blocks around the bomb have numbers
-    bombLoc.forEach(function(loc){
+    bombLoc.forEach(function(loc) {
         DEBUG(`Creating bomb at: ${loc.x} , ${loc.y}`, "info");
         blocks[loc.x][loc.y].bType = blockTypes[2];
+    });
+    // Make the blocks around the bomb have numbers
+    bombLoc.forEach(function(loc){
         var number = 2;
         surround.forEach(function(surroundNumber) { // Wrong generation
             if(insideBounds({x : loc.x + surroundNumber.x, y : loc.y + surroundNumber.y})) {
@@ -71,12 +73,13 @@ function generateHiddenGrid(size, bombAmount) {
                         }
                     }
                 });
-                if(blocks[loc.x + surroundNumber.x][loc.y + surroundNumber.y] == blockTypes[1] && number > 2) { // makes bomb, number cannot be 2
+                if(blocks[loc.x + surroundNumber.x][loc.y + surroundNumber.y].bType != blockTypes[2] && number > 2) { // makes bomb, number cannot be 2
                     blocks[loc.x + surroundNumber.x][loc.y + surroundNumber.y] = {bType : blockTypes[number], isClicked : false};
+                } else {
+                    DEBUG(`ERROR: BLOCK AT ${loc.x + surroundNumber.x}, ${loc.y + surroundNumber.y} IS OVERWRITTEN`, 'error');
                 }
                 number = 2;
             }
-            //console.error("Reset to 2");
         });
     });
     DEBUG(blocks, 'info');
