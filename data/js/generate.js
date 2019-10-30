@@ -4,10 +4,19 @@ function initCanvas(size) { // Create canvas and activate click detector
     canvas.width = size.x * 16;
     canvas.height = size.y * 16;
 
-    canvas.addEventListener("click", function(evt){
+    canvas.addEventListener("click", function(evt){ // Left click detection
         var mPos = getMousePos(canvas, evt);
         clickedBlock(Math.floor(mPos.x / 16), Math.floor(mPos.y / 16));
     });
+    canvas.addEventListener("contextmenu", function(evt) { // Right click detection
+        var mPos = getMousePos(canvas, evt);
+        rightClickedBlock(Math.floor(mPos.x / 16), Math.floor(mPos.y / 16));
+    });
+
+    // Remove context menu on right click
+    canvas.oncontextmenu = function (e) {
+        e.preventDefault();
+    };
 }
 
 function generateShownGrid(size) { // Generates empty grid    
@@ -75,8 +84,6 @@ function generateHiddenGrid(size, bombAmount) {
                 });
                 if(blocks[loc.x + surroundNumber.x][loc.y + surroundNumber.y].bType != blockTypes[2] && number > 2) { // makes bomb, number cannot be 2
                     blocks[loc.x + surroundNumber.x][loc.y + surroundNumber.y] = {bType : blockTypes[number], isClicked : false};
-                } else {
-                    DEBUG(`ERROR: BLOCK AT ${loc.x + surroundNumber.x}, ${loc.y + surroundNumber.y} IS OVERWRITTEN`, 'error');
                 }
                 number = 2;
             }

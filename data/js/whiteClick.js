@@ -16,8 +16,11 @@ function clickedWhite(x, y) {
 function findPath(xS, yS, xF, yF) {
     var startPos = {x : xS, y : yS};
     var foundPath = false;
-    var maxTries = 30;
+    var maxTries = 50;
     var tryNumber = 0;
+    var runNumber = 0;
+
+    var loopLoc = [];
 
     while(!foundPath && maxTries > tryNumber) {
         var differences = [];
@@ -53,12 +56,29 @@ function findPath(xS, yS, xF, yF) {
         xS = bestLoc.x;
         yS = bestLoc.y;
 
+        if(runNumber > 1) {
+            if(loopLoc[runNumber - 2].x == bestLoc.x && loopLoc[runNumber - 2].y == bestLoc.y) {
+                DEBUG(`BREAKING LOOP, NO PATH FOUND`, 'error');
+                tryNumber += maxTries;
+            } else {
+                DEBUG(`looploc: ${loopLoc[runNumber - 2].x}, ${loopLoc[runNumber - 2].y} & bestloc: ${bestLoc.x}, ${bestLoc.y}`);
+            }
+        } else {
+            DEBUG(`runnumber is less than one, and looploc is not the same as bestloc`)
+            tryNumber--;
+        }
+
         DEBUG(`To go: ${difference(xS, xF)}, ${difference(yS, yF)}`, 'info');
         if(xS == xF && yS == yF) {
             DEBUG(`Reached block ${xF}, ${yF}`, 'info');
             for(let surroundPos of surround) {
                 if(insideBounds({x : surroundPos.x + startPos.x, y : surroundPos.y + startPos.y})) {
                     createBlock(blocks[startPos.x + surroundPos.x][startPos.y + surroundPos.y].bType, startPos.x + surroundPos.x, startPos.y + surroundPos.y);
+                    
+                    if(blocks[startPos.x + surroundPos.x][startPos.y + surroundPos.y].bType != blockTypes[1] && blocks[startPos.x + surroundPos.x][startPos.y + surroundPos.y].bType != blockTypes[2] && blocks[startPos.x + surroundPos.x][startPos.y + surroundPos.y].isClicked == false) {
+                        score -= blocks[startPos.x + surroundPos.x][startPos.y + surroundPos.y].bType * -1;
+                        blocks[startPos.x + surroundPos.x][startPos.y + surroundPos.y].isClicked = true;
+                    }
                     blocks[startPos.x + surroundPos.x][startPos.y + surroundPos.y].isClicked = true;
                 }
             }
@@ -66,7 +86,12 @@ function findPath(xS, yS, xF, yF) {
             foundPath = true;
         }
 
+        loopLoc.push(bestLoc);
+
         tryNumber++;
         DEBUG(`Try ${tryNumber}`, 'info');
+
+        runNumber++;
+        DEBUG(`Run number ${runNumber}`, 'warning');
     }
 }
