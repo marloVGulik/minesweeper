@@ -13,6 +13,20 @@ var winState;
 var disarmedBombs = [];
 var score = 0;
 
+var time = {
+    update: function() {
+        var DT = new Date;
+        document.getElementById("timeNumbers").innerHTML = `${DT.getHours()}:${DT.getMinutes()}`;
+    },
+    init: function() {
+        time.update()
+        setInterval(time.update, 1000);
+    }
+}
+
+
+time.init();
+
 function Init() { // Run to start game
     size.x = prompt("Width");
     size.y = prompt("Height");
@@ -20,9 +34,7 @@ function Init() { // Run to start game
 
     score = 0;
     disarmedBombs = [];
-
     initCanvas(size);
     generateShownGrid(size);
     generateHiddenGrid(size, bombAmount);
 }
-

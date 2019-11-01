@@ -1,6 +1,65 @@
+body {
+    background-image: url(../images/background.png);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    padding: 0;
+    margin: 0;
+    color: white;
+    overflow: hidden;
+}
 #resetButton {
     width: 26px;
     height: 26px;
     border: none;
     background-image: url(../images/happy.png);
+}
+
+#frame {
+    position: absolute;
+    
+}
+#frameDrag {
+    cursor: move;
+    height: 35px;
+}
+#frameDrag img {
+    padding: 0;
+    margin: -2px;
+}
+
+#bottomBar {
+    margin: 0 0 -4px 0;
+    padding: 0;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+}
+#midBB {
+    position: absolute;
+    display: inline-block;
+    width: 100%;
+    height: 34px;
+    z-index: -100;
+}
+#iconsBB {
+    position: absolute;
+    right: 54px;
+}
+#time {
+    width: 54px;
+    height: 34px;
+    position: absolute;
+    right: 0px;
+    display: inline-block;
+}
+#time img {
+    width: 100%;
+    height: 34px;
+}
+#time p {
+    margin: 0;
+    bottom: 8px;
+    left: 8px;
+    position: absolute;
 }

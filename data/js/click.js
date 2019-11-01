@@ -72,4 +72,3 @@ function getMousePos(canvas, evt) {
         y: evt.clientY - rect.top
     };
 }
-

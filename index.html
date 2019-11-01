@@ -25,10 +25,25 @@
         <img src="data/images/dead.png" id="dead" width="0" height="0">
         <img src="data/images/win.png" id="win" width="0" height="0">
 
-
-        <button onclick="Init()" id="resetButton"></button>
-        <br>
-        <canvas id="main"></canvas>
+        <div id="frame">
+            <div id="frameDrag">
+                <img src="data/images/XP/minesweeperLeftTop.png" id="leftProg">
+                <img src="data/images/XP/topBarProgram.png" id="midProg">
+                <img src="data/images/XP/minesweeperRightTop.png" id="rightProg">
+            </div>
+            <button onclick="Init()" id="resetButton"></button>
+            <br>
+            <canvas id="main"></canvas>
+        </div>
+        <div id="bottomBar">
+            <img src="data/images/XP/bottomBarStartProgram.png" id="startBB">
+            <img src="data/images/XP/bottomBar8PX.png" id="midBB">
+            <img src="data/images/XP/bottomBarIcons.png" id="iconsBB">
+            <div id="time">
+                <img src="data/images/XP/bottomBarRight8PX.png" id="rightEBB">
+                <p id="timeNumbers"></p>
+            </div>
+        </div>
         
         <script src="data/js/helper.js"></script>
         <script src="data/js/generate.js"></script>

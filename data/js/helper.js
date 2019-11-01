@@ -47,3 +47,38 @@ function DEBUG(message, mode) {
         }
     }
 }
+
+// Drag movement
+dragElement(document.getElementById("frame"));
+function dragElement(element) { 
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    if(document.getElementById(element.id + "Drag")) {
+        document.getElementById(element.id + "Drag").onmousedown = dragMD;
+    } else {
+        document.onmousedown = dragMD;
+    }
+
+    function dragMD(e) { 
+        e = e || window.event;
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDrag;
+        document.onmousemove = dragElem;
+    }
+    function dragElem(e) { 
+        e = e || window.event;
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+
+        element.style.top = (element.offsetTop - pos2) + "px";
+        element.style.left = (element.offsetLeft - pos1) + "px";
+    }
+    function closeDrag() { 
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+}
