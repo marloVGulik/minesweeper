@@ -5,11 +5,10 @@ function clickedBlock(x, y, cheat) {
     
     if(disarmedBombs.length == bombLoc.length) {
         winState = true;
-        document.write(`Your score was ${score}`);
         //var button = document.getElementById("resetButton");
         var button = document.getElementsByTagName("button");
         DEBUG(button, 'error');
-        button.style.backgroundImage = 'url("../images/win.png")';
+        topImage("win.png");
     }
 
     var clickedBlockType = blocks[x][y].bType;
@@ -19,6 +18,11 @@ function clickedBlock(x, y, cheat) {
                 case blockTypes[1]:
                     DEBUG(`Block is white`, 'warning');
                     blocks[x][y].isClicked = true;
+                    createBlock(blocks[x][y].bType, x, y);
+                    surround.forEach(function(loc){
+                        blocks[x + loc.x][y + loc.y].isClicked = true;
+                        createBlock(blocks[x + loc.x][y + loc.y].bType, x + loc.x, y + loc.y);
+                    });
                     clickedWhite(x, y);
                     break;
                 case blockTypes[2]:

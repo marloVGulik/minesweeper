@@ -82,3 +82,8 @@ function dragElement(element) {
         document.onmousemove = null;
     }
 }
+
+// Create top image
+function topImage(imageFileName) {
+    document.getElementById("resetButton").innerHTML = `<img src="data/images/MSIcons/${imageFileName}" alt="${imageFileName}">`
+}

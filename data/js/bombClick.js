@@ -4,5 +4,6 @@ function clickedBomb(x, y) {
         createBlock(blockTypes[2], currentBombLoc.x, currentBombLoc.y);
         winState = false;
     });
+    topImage("dead.png");
     createBlock(blockTypes[11], x, y);
 }

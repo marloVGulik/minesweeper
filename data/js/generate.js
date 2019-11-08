@@ -1,22 +1,22 @@
 // Canvas generation
 var canvas = document.getElementById("main");
+canvas.addEventListener("click", function(evt){ // Left click detection
+    var mPos = getMousePos(canvas, evt);
+    clickedBlock(Math.floor(mPos.x / 16), Math.floor(mPos.y / 16));
+});
+canvas.addEventListener("contextmenu", function(evt) { // Right click detection
+    var mPos = getMousePos(canvas, evt);
+    rightClickedBlock(Math.floor(mPos.x / 16), Math.floor(mPos.y / 16));
+});
+
+// Remove context menu on right click
+canvas.oncontextmenu = function (e) {
+    e.preventDefault();
+};
+
 function initCanvas(size) { // Create canvas and activate click detector
     canvas.width = size.x * 16;
     canvas.height = size.y * 16;
-
-    canvas.addEventListener("click", function(evt){ // Left click detection
-        var mPos = getMousePos(canvas, evt);
-        clickedBlock(Math.floor(mPos.x / 16), Math.floor(mPos.y / 16));
-    });
-    canvas.addEventListener("contextmenu", function(evt) { // Right click detection
-        var mPos = getMousePos(canvas, evt);
-        rightClickedBlock(Math.floor(mPos.x / 16), Math.floor(mPos.y / 16));
-    });
-
-    // Remove context menu on right click
-    canvas.oncontextmenu = function (e) {
-        e.preventDefault();
-    };
 }
 
 function generateShownGrid(size) { // Generates empty grid    

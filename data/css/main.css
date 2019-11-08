@@ -12,6 +12,8 @@ body {
     width: 26px;
     height: 26px;
     border: none;
+    margin: 0;
+    padding: 0;
     background-image: url(../images/happy.png);
 }
 
@@ -20,7 +22,7 @@ body {
     
 }
 #frameDrag {
-    cursor: move;
+    cursor: initial;
     height: 35px;
 }
 #frameDrag img {
